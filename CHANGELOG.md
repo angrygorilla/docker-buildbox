@@ -7,6 +7,7 @@ Versions
 * Update kubectl base image to alpine:3.13
 * Update dind base image to docker:20.10.2-dind
 * Update platformsh base image to php:7.4-cli-alpine3.13
+* Update platformsh client to 3.64.x
 
 2021-01-25
 -----------
