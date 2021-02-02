@@ -61,8 +61,19 @@ jobs:
           pip install pip pipenv
           pipenv sync
       - name: Build and tests images
+        id: build
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           pipenv run python image_builder.py build -d --image ${{ matrix.image }} --version ${{ matrix.version }}
+          OUTPUT=$(pipenv run python image_builder.py getref -d --image ${{ matrix.image }} --version ${{ matrix.version }} | tail -1)
+          echo "::set-output name=imageref::$OUTPUT"
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.build.outputs.imageref }}
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          severity: 'CRITICAL'
